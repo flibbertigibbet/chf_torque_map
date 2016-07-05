@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>National, Regional, and Local Air Pollution in the United States</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+    <link rel="shortcut icon" href="https://cartodb.com/assets/favicon.ico" />
+
+    <!-- Map takes up full browser window -->
+    <style>
+      html, body, #map {
+        height: 100%;
+        padding: 0;
+        margin: 0;
+      }
+      #cartocss {
+          position: absolute;
+          top: 20px;
+          right: 20px;
+      }
+      #sql-buttons {
+        position: fixed;
+        top: 170px;
+        right: 20px;
+      }
+      .layer_selector {
+          background: rgba(255,255,255,0.9);
+          border-radius: 5px;
+          font-family: "Trebuchet MS", sans-serif;
+          padding: 0;
+          border: 1px solid #999;
+          top: 50px;
+          width: 250px;
+      }
+      .layer_selector > p {
+          padding: 15px 30px;
+          border-bottom: 1px solid #999;
+      }
+      .layer_selector ul {
+          padding: 0; margin: 0;
+          list-style-type: none;
+      }
+      .layer_selector li {
+          padding: 15px 30px;
+          font-family: "Trebuchet MS", Helvetica, Arial;
+          font-size: 13px;
+          color: #444;
+          cursor: pointer;
+      }
+      .layer_selector li:not(:last-child) {
+          border-bottom: 1px solid #999;
+      }
+      .layer_selector li:hover {
+          background-color: #F0F0F0;
+          cursor: pointer;
+      }
+      .layer_selector li.sql_selected,
+      .layer_selector li.cartocss_selected {
+          background-color: #A6CEE3;
+      }
+      div#title {
+        position: fixed;
+        width: auto;
+        left: 50px;
+        top: 10px;
+        background: rgba(255,255,255,0.9);
+        border-radius: 5px;
+        padding: 0px 10px 0px 10px;
+        border: 1px solid #999;
+        color: #444;
+        color: #000;
+        font-family: "Trebuchet MS", Helvetica, sans-serif;
+        font-size: 20px;
+      }
+      div#img {
+        position: fixed;
+        bottom: 30px;
+        right: 20px;
+        width: 100px;
+        background: #FFF;
+        border-radius: 5px;
+        padding: 0;
+        border: 1px solid #999;
+      }
+      div#sidebar {
+        position: fixed;
+        width: 250px;
+        left: 20px;
+        bottom: 120px;
+        background: rgba(255,255,255,0.9);
+        border-radius: 5px;
+        padding: 0;
+        border: 1px solid #999;
+        color: #444;
+        font-family: "Trebuchet MS", Helvetica, sans-serif;
+        font-size: 13px;
+      }
+      div#sidebar > p {
+          padding: 10px 10px;
+      }
+      div#sidebar ul {
+          padding: 10px 10px;
+      }
+    </style>
+
+    <style type="cartocss/text" id="cartocss">
+    /** torque_heat visualization */
+    Map {
+    -torque-frame-count:300;
+    -torque-animation-duration:100;
+    -torque-time-attribute:"_1st_max_datetime";
+    -torque-aggregation-function:"avg(arithmetic_mean)";
+    -torque-resolution:1;
+    -torque-data-aggregation:linear;
+    }
+
+    #epa_all_clean_final{
+      image-filters: colorize-alpha(#FEE5D9, #FCAE91, #FB6A4A, #DE2D26, #A50F15);
+      marker-file: url(http://s3.amazonaws.com/com.cartodb.assets.static/alphamarker.png);
+      marker-fill-opacity: 0.4*[value];
+      marker-width: 35;
+    }
+    #epa_all_clean_final[frame-offset=1] {
+     marker-width:37;
+     marker-fill-opacity:0.2;
+    }
+    #epa_all_clean_final[frame-offset=2] {
+     marker-width:39;
+     marker-fill-opacity:0.1;
+    }
+    </style>
+
+    <style type="cartocss/text" id="carbon monoxide">
+    /** torque_heat visualization */
+    Map {
+    -torque-frame-count:300;
+    -torque-animation-duration:100;
+    -torque-time-attribute:"_1st_max_datetime";
+    -torque-aggregation-function:"avg(arithmetic_mean)";
+    -torque-resolution:1;
+    -torque-data-aggregation:linear;
+    }
+
+    #epa_all_clean_final{
+      image-filters: colorize-alpha(#FEE5D9, #FCAE91, #FB6A4A, #DE2D26, #A50F15);
+      marker-file: url(http://s3.amazonaws.com/com.cartodb.assets.static/alphamarker.png);
+      marker-fill-opacity: 0.4*[value];
+      marker-width: 35;
+    }
+    #epa_all_clean_final[frame-offset=1] {
+     marker-width:37;
+     marker-fill-opacity:0.2;
+    }
+    #epa_all_clean_final[frame-offset=2] {
+     marker-width:39;
+     marker-fill-opacity:0.1;
+    }
+    </style>
+
+    <style type="cartocss/text" id="ozone">
+    /** torque_heat visualization */
+    Map {
+    -torque-frame-count:300;
+    -torque-animation-duration:100;
+    -torque-time-attribute:"_1st_max_datetime";
+    -torque-aggregation-function:"avg(arithmetic_mean)";
+    -torque-resolution:1;
+    -torque-data-aggregation:linear;
+    }
+
+    #epa_all_clean_final{
+      image-filters: colorize-alpha(#FEE5D9, #FCAE91, #FB6A4A, #DE2D26, #A50F15);
+      marker-file: url(http://s3.amazonaws.com/com.cartodb.assets.static/alphamarker.png);
+      marker-fill-opacity: 0.4*[value];
+      marker-width: 35;
+    }
+    #epa_all_clean_final[frame-offset=1] {
+     marker-width:37;
+     marker-fill-opacity:0.2;
+    }
+    #epa_all_clean_final[frame-offset=2] {
+     marker-width:39;
+     marker-fill-opacity:0.1;
+    }
+    </style>
+
+    <style type="cartocss/text" id="lead">
+    /** torque_heat visualization */
+    Map {
+    -torque-frame-count:300;
+    -torque-animation-duration:100;
+    -torque-time-attribute:"_1st_max_datetime";
+    -torque-aggregation-function:"avg(arithmetic_mean)";
+    -torque-resolution:1;
+    -torque-data-aggregation:linear;
+    }
+
+    #epa_all_clean_final{
+      image-filters: colorize-alpha(#FEE5D9, #FCAE91, #FB6A4A, #DE2D26, #A50F15);
+      marker-file: url(http://s3.amazonaws.com/com.cartodb.assets.static/alphamarker.png);
+      marker-fill-opacity: 0.4*[value];
+      marker-width: 35;
+    }
+    #epa_all_clean_final[frame-offset=1] {
+     marker-width:37;
+     marker-fill-opacity:0.2;
+    }
+    #epa_all_clean_final[frame-offset=2] {
+     marker-width:39;
+     marker-fill-opacity:0.1;
+    }
+    </style>
+
+    <style type="cartocss/text" id="nitrogen dioxide">
+    /** torque_heat visualization */
+    Map {
+    -torque-frame-count:300;
+    -torque-animation-duration:100;
+    -torque-time-attribute:"_1st_max_datetime";
+    -torque-aggregation-function:"avg(arithmetic_mean)";
+    -torque-resolution:1;
+    -torque-data-aggregation:linear;
+    }
+
+    #epa_all_clean_final{
+      image-filters: colorize-alpha(#FEE5D9, #FCAE91, #FB6A4A, #DE2D26, #A50F15);
+      marker-file: url(http://s3.amazonaws.com/com.cartodb.assets.static/alphamarker.png);
+      marker-fill-opacity: 0.4*[value];
+      marker-width: 35;
+    }
+    #epa_all_clean_final[frame-offset=1] {
+     marker-width:37;
+     marker-fill-opacity:0.2;
+    }
+    #epa_all_clean_final[frame-offset=2] {
+     marker-width:39;
+     marker-fill-opacity:0.1;
+    }
+    </style>
+
+    <style type="cartocss/text" id="particulate matter">
+    /** torque_heat visualization */
+    Map {
+    -torque-frame-count:300;
+    -torque-animation-duration:100;
+    -torque-time-attribute:"_1st_max_datetime";
+    -torque-aggregation-function:"avg(arithmetic_mean)";
+    -torque-resolution:1;
+    -torque-data-aggregation:linear;
+    }
+
+    #epa_all_clean_final{
+      image-filters: colorize-alpha(#FEE5D9, #FCAE91, #FB6A4A, #DE2D26, #A50F15);
+      marker-file: url(http://s3.amazonaws.com/com.cartodb.assets.static/alphamarker.png);
+      marker-fill-opacity: 0.4*[value];
+      marker-width: 35;
+    }
+    #epa_all_clean_final[frame-offset=1] {
+     marker-width:37;
+     marker-fill-opacity:0.2;
+    }
+    #epa_all_clean_final[frame-offset=2] {
+     marker-width:39;
+     marker-fill-opacity:0.1;
+    }
+    </style>
+
+    <style type="cartocss/text" id="sulfur dioxide">
+    /** torque_heat visualization */
+    Map {
+    -torque-frame-count:300;
+    -torque-animation-duration:100;
+    -torque-time-attribute:"_1st_max_datetime";
+    -torque-aggregation-function:"avg(arithmetic_mean)";
+    -torque-resolution:1;
+    -torque-data-aggregation:linear;
+    }
+
+    #epa_all_clean_final{
+      image-filters: colorize-alpha(#FEE5D9, #FCAE91, #FB6A4A, #DE2D26, #A50F15);
+      marker-file: url(http://s3.amazonaws.com/com.cartodb.assets.static/alphamarker.png);
+      marker-fill-opacity: 0.4*[value];
+      marker-width: 35;
+    }
+    #epa_all_clean_final[frame-offset=1] {
+     marker-width:37;
+     marker-fill-opacity:0.2;
+    }
+    #epa_all_clean_final[frame-offset=2] {
+     marker-width:39;
+     marker-fill-opacity:0.1;
+    }
+    </style>
+
+    <style type="text/sql" id="sql">
+    SELECT
+      s.*
+    FROM
+      epa_all_clean_final s,
+    WHERE
+      parameter_name = '{{pollutant}}'
+    </style>
+
+    <link rel="stylesheet" href="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/themes/css/cartodb.css"/>
+  </head>
+  <body>
+    <div id="map"></div>
+    <div id="title">
+      <h1>Tracking Air Pollution in the United States, 1990-2015</h1>
+    </div>
+    <div id="img">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/1/11/CHF_logo_horiz_blue_solid.jpg" style="width:100px;height:50px;">
+    </div>
+    <div id="sidebar">
+      <p> CONTINUING THE NARRATIVE </p>
+      <ul>Since Arnold Beckman's innovative instrumentation ... </ul>
+    </div>
+    <div id="sql-buttons" class="layer_selector">
+        <p>SELECT A CRITERIA AIR POLLUTANT</p>
+        <ul>
+            <li data="carbon monoxide">Carbon monoxide</li>
+            <li data="lead">Lead</li>
+            <li data="nitrogen dioxide">Nitrogen dioxide</li>
+            <li data="ozone">Ozone</li>
+            <li data="particulate matter">Particulate matter</li>
+            <li data="sulfur dioxide">Sulfur dioxide</li>
+            <li data="XXXXX">Reset Selection</li>
+        </ul>
+    </div>
+
+    <!-- include cartodb.js library -->
+    <script src="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/cartodb.js"></script>
+
+    <!-- Drop your code between the script tags below! -->
+    <script>
+    window.onload = function main () {
+        // Instantiate new map object, place it in 'map' element
+        var map = new L.map('map', {
+          center: [38.6270, -90.1994], // St. Louis
+          zoom: 4
+        });
+
+        var layerSource = {
+          type: 'torque',
+          options: {
+            user_name: 'chemheritage', // replace with your user name
+            table_name: 'epa_all_clean_final',
+            cartocss: $("#cartocss").html()
+          }
+        }
+
+        // Add a basemap to the map object just created
+        L.tileLayer('https://a.tiles.mapbox.com/v4/mapbox.dark/{z}/{x}/{y}.png?access_token={token}', {
+          attribution: 'Mapbox',
+          subdomains: ['a','b','c','d'],
+          token: 'pk.eyJ1IjoiYXNjaGVlcmVzIiwiYSI6ImNpcHUwdDV2NDA3NWtmb20yaWx5dGowamgifQ.2ElOHLz-dlArxPvDnDGpEA'
+        }).addTo(map);
+
+        // Create layer selector
+        function createSelector(layer) {
+          var condition = "";
+          var $options = $(".layer_selector").find("li");
+          $options.click(function(e) {
+            layer.stop();
+            var $li = $(e.target);
+            var selected = $li.attr('data');
+            if (selected === 'XXXXX') {
+              var newSQL = "SELECT * FROM " + table_name;
+              $("#location").text("");
+            } else {
+              var newSQL = Mustache.render($("#sql").html(),{pollutant: selected});
+              $("#location").text("to " + selected);
+            }
+
+            console.log(newSQL);
+            layer.setSQL(newSQL).on('load', function() {
+              layer.play();
+            });
+          });
+        }
+
+        // put torque layer on top of basemap
+        cartodb.createLayer(map, layerSource)
+          .addTo(map)
+          .done(function(layer) {
+            var torqueLayer = layer;
+            torqueLayer.pause();
+
+            // once animation is loaded, automatically play
+            torqueLayer.on('load', function() {
+              torqueLayer.play();
+            });
+
+            // pause animation at last frame
+            torqueLayer.on('change:time', function(changes) {
+              if (changes.step === torqueLayer.provider.getSteps() - 1) {
+                torqueLayer.pause();
+              }
+            });
+
+            createSelector(torqueLayer);
+          })
+          .error(function(err) {
+            console.log("Error: " + err);
+          });
+
+          // customize timeslider, inits slider and a small play/pause button
+          /*.done(function(layer) {
+            var slider = map.viz.timeSlider;
+            slider.formatter(function(d) {
+              return d.getUTCFullYear() + "/" + d.getUTCMonth() + "/" + d.getUTCDay();
+            })
+          })
+          .error(function(err) {
+            console.log(err);
+          }).addTo(map);*/
+    }
+
+    </script>
+  </body>
+</html>
