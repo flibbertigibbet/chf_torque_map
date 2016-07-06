@@ -292,15 +292,6 @@
     }
     </style>
 
-    <style type="text/sql" id="sql">
-    SELECT
-      s.*
-    FROM
-      epa_all_clean_final s,
-    WHERE
-      parameter_name = '{{pollutant}}'
-    </style>
-
     <link rel="stylesheet" href="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/themes/css/cartodb.css"/>
   </head>
   <body>
@@ -347,7 +338,7 @@
             table_name: 'epa_all_clean_final',
             cartocss: $("#cartocss").html()
           }
-        }
+        };
 
         // Add a basemap to the map object just created
         L.tileLayer('https://a.tiles.mapbox.com/v4/mapbox.dark/{z}/{x}/{y}.png?access_token={token}', {
@@ -364,11 +355,13 @@
             layer.stop();
             var $li = $(e.target);
             var selected = $li.attr('data');
+            var newSQL;
             if (selected === 'XXXXX') {
-              var newSQL = "SELECT * FROM " + table_name;
+              newSQL = "SELECT * FROM " + table_name;
               $("#location").text("");
             } else {
-              var newSQL = Mustache.render($("#sql").html(),{pollutant: selected});
+              var qryStr = "SELECT * FROM epa_all_clean_final WHERE parameter_name ILIKE '%{{pollutant}}%'";
+              newSQL = Mustache.render(qryStr, {pollutant: selected});
               $("#location").text("to " + selected);
             }
 
@@ -414,7 +407,7 @@
           .error(function(err) {
             console.log(err);
           }).addTo(map);*/
-    }
+    };
 
     </script>
   </body>
