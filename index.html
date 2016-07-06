@@ -292,15 +292,6 @@
     }
     </style>
 
-    <style type="text/sql" id="sql">
-    SELECT
-      s.*
-    FROM
-      epa_all_clean_final s,
-    WHERE
-      parameter_name = '{{pollutant}}'
-    </style>
-
     <link rel="stylesheet" href="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/themes/css/cartodb.css"/>
   </head>
   <body>
@@ -369,7 +360,8 @@
               newSQL = "SELECT * FROM " + table_name;
               $("#location").text("");
             } else {
-              newSQL = Mustache.render($("#sql").html(),{pollutant: selected});
+              var qryStr = "SELECT * FROM epa_all_clean_final WHERE parameter_name ILIKE '%{{pollutant}}%'";
+              newSQL = Mustache.render(qryStr, {pollutant: selected});
               $("#location").text("to " + selected);
             }
 
