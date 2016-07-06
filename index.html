@@ -347,7 +347,7 @@
             table_name: 'epa_all_clean_final',
             cartocss: $("#cartocss").html()
           }
-        }
+        };
 
         // Add a basemap to the map object just created
         L.tileLayer('https://a.tiles.mapbox.com/v4/mapbox.dark/{z}/{x}/{y}.png?access_token={token}', {
@@ -364,11 +364,12 @@
             layer.stop();
             var $li = $(e.target);
             var selected = $li.attr('data');
+            var newSQL;
             if (selected === 'XXXXX') {
-              var newSQL = "SELECT * FROM " + table_name;
+              newSQL = "SELECT * FROM " + table_name;
               $("#location").text("");
             } else {
-              var newSQL = Mustache.render($("#sql").html(),{pollutant: selected});
+              newSQL = Mustache.render($("#sql").html(),{pollutant: selected});
               $("#location").text("to " + selected);
             }
 
@@ -414,7 +415,7 @@
           .error(function(err) {
             console.log(err);
           }).addTo(map);*/
-    }
+    };
 
     </script>
   </body>
